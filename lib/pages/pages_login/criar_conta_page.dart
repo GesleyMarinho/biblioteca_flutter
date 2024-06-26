@@ -20,6 +20,8 @@ class _CriarContaPageState extends State<CriarContaPage> {
   bool visualizarSenha = true;
   bool visualizarConfirmaSenha = true;
 
+  bool _inseridoComSucesso = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,7 +150,6 @@ class _CriarContaPageState extends State<CriarContaPage> {
                 const SizedBox(height: 48.0),
                 ElevatedButton(
                   onPressed: () async {
-                    // Lógica de insert....
 
                     // Validando que nenhum campo está vazio
                     if (nomeController.text.isEmpty ||
@@ -179,21 +180,37 @@ class _CriarContaPageState extends State<CriarContaPage> {
                       confirmaSenha: confirmaSenhaController.text,
                     );
 
-                    await LoginData.instace.insertUsuario(novoUsuario);
-                    // Limpar os dados inseridos para criar outro usuário
-                    nomeController.clear();
-                    emailController.clear();
-                    senhaController.clear();
-                    confirmaSenhaController.clear();
+                    try {
+                      await LoginData.instace.insertUsuario(novoUsuario);
+                      print('teste $novoUsuario');
+                      print(_inseridoComSucesso);
+                      setState(() {
+                        _inseridoComSucesso = true;
+                      });
 
-                    // Mostrar uma mensagem de insert do usuário com sucesso
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Usuário Inserido com Sucesso!'),
-                      ),
-                    );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const  SnackBar(
+                           content:  Text('Usuário Inserido Com sucesso!'),
+                        ) ,
+                      );
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                        (Route<dynamic> route) => false,
+                      );
+                    } catch (e) {
+                      setState(() {
+                        _inseridoComSucesso = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Algo deu errado.'),
+                        ),
+                      );
+                    }
                   },
-                  child: const Text('Insert'),
+                  child: const Text('Criar Conta'),
                 ),
               ],
             ),

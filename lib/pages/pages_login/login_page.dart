@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController senhaLoginController = TextEditingController();
 
   bool visualizarSenha = true;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -40,136 +41,147 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Digite os dados de acesso abaixo !!!',
-                style: TextStyle(
-                  color: Colors.white,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Digite os dados de acesso abaixo !!!',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32.0),
-              CupertinoTextField(
-                controller: emailLoginController,
-                cursorColor: Colors.yellow,
-                padding: const EdgeInsets.all(16.0),
-                placeholder: 'Digite o seu Email',
-                //obscureText: true,
-                placeholderStyle:
-                    const TextStyle(color: Colors.white70, fontSize: 14.0),
-                style: const TextStyle(color: Colors.white, fontSize: 14.0),
-                keyboardType: TextInputType.emailAddress,
-                decoration: const BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8.0),
-                    )),
-              ),
-              const SizedBox(height: 32.0),
-              TextField(
-                  controller: senhaLoginController,
-                  obscureText: visualizarSenha,
-                  //padding: EdgeInsets.all(16.0),
+                const SizedBox(height: 32.0),
+                CupertinoTextField(
+                  controller: emailLoginController,
                   cursorColor: Colors.pinkAccent,
-                  decoration: InputDecoration(
-                    hintText: 'Digite sua senha',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        visualizarSenha
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          visualizarSenha = !visualizarSenha;
-                        });
-                      },
-                    ),
-                    hintStyle:
-                        const TextStyle(color: Colors.white70, fontSize: 16.0),
-                    filled: true,
-                    fillColor: Colors.black12,
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                  )),
-              const SizedBox(height: 32),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white70, width: 0.8),
-                    borderRadius: BorderRadius.circular(7)),
-                child: CupertinoButton(
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  onPressed: () async {
-                    // Insira a lógica de criação de conta aqui
-
-                    LoginModel usuario = LoginModel(
-                      email: emailLoginController.text,
-                      senha: senhaLoginController.text,
-                    );
-
-                    //caso o login seja feito com sucesso
-                    bool loginSuccess =
-                        await LoginData.instace.auteticacaoUsuario(usuario);
-                    if (loginSuccess) {
-                      emailLoginController.clear();
-                      senhaLoginController.clear();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => BibliotecaPage()),
-                      );
-                    } else {
-                      // Exibir mensagem de erro
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Erro'),
-                          content: const Text('Email ou senha incorretos.'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('OK'),
-                            ),
-                          ],
+                  padding: const EdgeInsets.all(16.0),
+                  placeholder: 'Digite o seu Email',
+                  //obscureText: true,
+                  placeholderStyle:
+                  const TextStyle(color: Colors.white70, fontSize: 14.0),
+                  style: const TextStyle(color: Colors.white, fontSize: 14.0),
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
+                      )),
+                ),
+                const SizedBox(height: 32.0),
+                TextField(
+                    controller: senhaLoginController,
+                    obscureText: visualizarSenha,
+                    //padding: EdgeInsets.all(16.0),
+                    cursorColor: Colors.pinkAccent,
+                    decoration: InputDecoration(
+                      hintText: 'Digite sua senha',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          visualizarSenha
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
+                        onPressed: () {
+                          setState(() {
+                            visualizarSenha = !visualizarSenha;
+                          });
+                        },
+                      ),
+                      hintStyle:
+                      const TextStyle(color: Colors.white70, fontSize: 16.0),
+                      filled: true,
+                      fillColor: Colors.black12,
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                    )),
+                const SizedBox(height: 32),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white70, width: 0.8),
+                      borderRadius: BorderRadius.circular(7)),
+                  child: CupertinoButton(
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                    )
+                        : const Text(
+                      "Login",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      LoginModel usuario = LoginModel(
+                        email: emailLoginController.text,
+                        senha: senhaLoginController.text,
                       );
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 7),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white70, width: 0.8),
-                    borderRadius: BorderRadius.circular(7)),
-                child: CupertinoButton(
-                  child: const Text(
-                    "Crie sua conta",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600),
+
+                      //caso o login seja feito com sucesso
+                      bool loginSuccess =
+                      await LoginData.instace.auteticacaoUsuario(usuario);
+
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      if (loginSuccess) {
+                        emailLoginController.clear();
+                        senhaLoginController.clear();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => BibliotecaPage()),
+                        );
+                      } else {
+                        // Exibir mensagem de erro
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Erro'),
+                            content: const Text('Email ou senha incorretos.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CriarContaPage()),
-                    );
-                  },
                 ),
-              )
-            ],
+                const SizedBox(height: 7),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white70, width: 0.8),
+                      borderRadius: BorderRadius.circular(7)),
+                  child: CupertinoButton(
+                    child: const Text(
+                      "Crie sua conta",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CriarContaPage()),
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
