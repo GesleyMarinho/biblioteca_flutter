@@ -1,6 +1,7 @@
 import 'package:biblioteca_flutter/data/biblioteca_data.dart';
 import 'package:biblioteca_flutter/model/biblioteca_model.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
@@ -42,6 +43,7 @@ class _ListPageState extends State<ListPage> {
         shrinkWrap: true,
         itemCount: livros.length,
         itemBuilder: (context, index) {
+          final livro = livros[index];
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.zero,
@@ -54,6 +56,15 @@ class _ListPageState extends State<ListPage> {
               ),
             ),
             child: ListTile(
+              leading: livros[index].image != null
+                  ? CircleAvatar(
+                      backgroundImage: FileImage(File(livros[index].image!)),
+                      radius: 30,
+                    )
+                  : const CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.book, color: Colors.white),
+                    ),
               title: Text(livros[index].nomeLivro),
               subtitle: Text(
                   'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}'),

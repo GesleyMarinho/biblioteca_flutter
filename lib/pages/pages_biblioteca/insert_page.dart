@@ -1,14 +1,67 @@
+import 'dart:io';
 import 'package:biblioteca_flutter/conexao_BD/connection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart' as path;
 
-class InsertPage extends StatelessWidget {
-  InsertPage({super.key});
+class InsertPage extends StatefulWidget {
+  const InsertPage({super.key});
 
+  @override
+  State<InsertPage> createState() => _InsertPageState();
+}
+
+class _InsertPageState extends State<InsertPage> {
   final TextEditingController nomeLivroController = TextEditingController();
   final TextEditingController nomeAutorController = TextEditingController();
   final TextEditingController precoController = TextEditingController();
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? pickedImage = await _picker.pickImage(
+      source: source, // Pode ser ImageSource.camera para a câmera
+    );
+    if (pickedImage != null) {
+      setState(() {
+        _image = File(pickedImage.path);
+      });
+    }
+  }
+
+  void _showImageSourceActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Galeria'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Câmera'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,115 +80,142 @@ class InsertPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              TextField(
-                controller: nomeLivroController,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.blue,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  labelText: 'Nome do Livro',
-                  hintText: 'As aventuras....',
-                  labelStyle: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  icon: const Icon(
-                    Icons.local_library,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              TextField(
-                controller: nomeAutorController,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.blue,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  labelText: 'Autor',
-                  hintText: 'Dom Casmuro....',
-                  labelStyle: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  icon: const Icon(
-                    Icons.person,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              TextField(
-                controller: precoController,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.blue,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  labelText: 'Preço',
-                  hintText: 'R\$....',
-                  labelStyle: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  icon: const Icon(
-                    Icons.monetization_on_rounded,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () => _insertButtonPress(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, // Cor de fundo do botão
-                  padding: const EdgeInsets.all(16.0), // Preenchimento interno
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(10.0), // Borda arredondada
-                  ),
-                  elevation: 4.0, // Elevação do botão
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.add, // Ícone de adição
-                      color: Colors.white, // Cor do ícone
-                    ),
-                    SizedBox(width: 8.0), // Espaçamento entre o ícone e o texto
-                    Text(
-                      'Insert', // Texto do botão
-                      style: TextStyle(
-                        fontSize: 16.0, // Tamanho do texto
-                        fontWeight: FontWeight.bold, // Negrito
-                        color: Colors.white, // Cor do texto
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  controller: nomeLivroController,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Colors.blue,
+                        width: 2,
                       ),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
-                  ],
+                    labelText: 'Nome do Livro',
+                    hintText: 'As aventuras....',
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    icon: const Icon(
+                      Icons.local_library,
+                      color: Colors.blue,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(
+                  height: 16,
+                ),
+                TextField(
+                  controller: nomeAutorController,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Colors.blue,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    labelText: 'Autor',
+                    hintText: 'Dom Casmuro....',
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    icon: const Icon(
+                      Icons.person,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                TextField(
+                  controller: precoController,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Colors.blue,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    labelText: 'Preço',
+                    hintText: 'R\$....',
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    icon: const Icon(
+                      Icons.monetization_on_rounded,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () => _showImageSourceActionSheet(context),
+                  child: Container(
+                    height: 150,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.green[200],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.blue),
+                    ),
+                    child: _image == null
+                        ? const Icon(
+                            Icons.add_a_photo,
+                            color: Colors.blue,
+                            size: 50,
+                          )
+                        : Image.file(
+                            _image!,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => _insertButtonPress(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    // Cor de fundo do botão
+                    padding: const EdgeInsets.all(16.0),
+                    // Preenchimento interno
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10.0), // Borda arredondada
+                    ),
+                    elevation: 4.0, // Elevação do botão
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.add, // Ícone de adição
+                        color: Colors.white, // Cor do ícone
+                      ),
+                      SizedBox(width: 8.0),
+                      Text(
+                        'Insert', // Texto do botão
+                        style: TextStyle(
+                          fontSize: 16.0, // Tamanho do texto
+                          fontWeight: FontWeight.bold, // Negrito
+                          color: Colors.white, // Cor do texto
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -147,27 +227,36 @@ class InsertPage extends StatelessWidget {
     final String nomeAutor = nomeAutorController.text;
     final double preco = double.parse(precoController.text);
 
-    try {
-      if (nomeLivro.isEmpty || nomeAutor.isEmpty || preco <= 0) {
-        _showDialog(context, 'Erro',
-            'Por Favor, preencha todos os campos corretamente.', Colors.red);
-      } else {
-        Database db = await Connection.get();
+    if (nomeLivro.isEmpty || nomeAutor.isEmpty || preco <= 0) {
+      _showDialog(context, 'Erro',
+          'Por Favor, preencha todos os campos corretamente.', Colors.red);
+    } else {
+      try {
+        String? imagePath;
+        if (_image != null) {
+          final Directory appDir = await getApplicationDocumentsDirectory();
+          imagePath =
+              path.join(appDir.path, 'images', path.basename(_image!.path));
+          await Directory(path.dirname(imagePath)).create(recursive: true);
+          await _image!.copy(imagePath);
+        }
 
+        Database db = await Connection.get();
         await db.insert(
           'livros',
           {
             'nomeLivro': nomeLivro,
             'nomeAutor': nomeAutor,
             'preco': preco,
+            'image': imagePath,
           },
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
         _showDialog(
             context, 'Sucesso', 'Livro inserido com Sucesso', Colors.blue);
+      } catch (e) {
+        _showDialog(context, 'Erro', 'Erro ao inserir o livro: $e', Colors.red);
       }
-    } catch (e) {
-      _showDialog(context, 'Erro', 'Erro ao inserir o livro: $e', Colors.red);
     }
   }
 
@@ -187,6 +276,9 @@ class InsertPage extends StatelessWidget {
                 nomeLivroController.clear();
                 nomeAutorController.clear();
                 precoController.clear();
+                setState(() {
+                  _image = null;
+                });
               },
             ),
           ],

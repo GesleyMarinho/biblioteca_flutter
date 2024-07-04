@@ -14,7 +14,8 @@ class Connection {
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               nomeLivro TEXT NOT NULL,
               nomeAutor TEXT NOT NULL,
-              preco REAL NOT NULL
+              preco REAL NOT NULL,
+              image TEXT 
             )
             ''');
 
@@ -28,7 +29,7 @@ class Connection {
           )
           ''');
         },
-        version: 2,
+        version: 1,
       );
     }
     return _db!;
