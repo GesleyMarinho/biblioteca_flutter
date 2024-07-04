@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:biblioteca_flutter/data/biblioteca_data.dart';
 import 'package:biblioteca_flutter/model/biblioteca_model.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +80,19 @@ class _DeletePageState extends State<DeletePage> {
                   ],
                 ),
                 child: ListTile(
+                  leading: livros[index].image != null
+                      ? CircleAvatar(
+                          backgroundImage:
+                              FileImage(File(livros[index].image!)),
+                          radius: 30,
+                        )
+                      : const CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          child: Icon(
+                            Icons.book,
+                            color: Colors.white,
+                          ),
+                        ),
                   title: Text(livros[index].nomeLivro),
                   subtitle: Text(
                       'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}'),
