@@ -25,12 +25,12 @@ class _ListPageState extends State<ListPage> {
   Future<void> _buscarGeneros() async {
     final listGeneros = await BibliotecaDatabase.instance.getBuscarGeneros();
     setState(() {
-      generos = listGeneros;
+      generos = ["Todos", ...listGeneros];
     });
   }
 
   Future<void> _filtrarLivrosGenero() async {
-    if (_generoSelecionado == null) {
+    if (_generoSelecionado == null || _generoSelecionado == "Todos") {
       _loadLivros();
     } else {
       final books = await BibliotecaDatabase.instance.getLivrosByGenero(_generoSelecionado!);
