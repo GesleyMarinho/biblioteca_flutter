@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         centerTitle: true,
+        automaticallyImplyLeading: false,
         title: const Text('Login Biblioteca'),
         backgroundColor: Colors.deepPurple,
       ),
@@ -59,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                   placeholder: 'Digite o seu Email',
                   //obscureText: true,
                   placeholderStyle:
-                  const TextStyle(color: Colors.white70, fontSize: 14.0),
+                      const TextStyle(color: Colors.white70, fontSize: 14.0),
                   style: const TextStyle(color: Colors.white, fontSize: 14.0),
                   keyboardType: TextInputType.emailAddress,
                   decoration: const BoxDecoration(
@@ -88,8 +89,8 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         },
                       ),
-                      hintStyle:
-                      const TextStyle(color: Colors.white70, fontSize: 16.0),
+                      hintStyle: const TextStyle(
+                          color: Colors.white70, fontSize: 16.0),
                       filled: true,
                       fillColor: Colors.black12,
                       border: const OutlineInputBorder(
@@ -105,15 +106,16 @@ class _LoginPageState extends State<LoginPage> {
                   child: CupertinoButton(
                     child: _isLoading
                         ? const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                    )
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.green),
+                          )
                         : const Text(
-                      "Login",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600),
-                    ),
+                            "Login",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600),
+                          ),
                     onPressed: () async {
                       setState(() {
                         _isLoading = true;
@@ -125,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       //caso o login seja feito com sucesso
                       bool loginSuccess =
-                      await LoginData.instace.auteticacaoUsuario(usuario);
+                          await LoginData.instace.auteticacaoUsuario(usuario);
 
                       setState(() {
                         _isLoading = false;
@@ -175,7 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CriarContaPage()),
+                        MaterialPageRoute(
+                            builder: (context) => CriarContaPage()),
                       );
                     },
                   ),
