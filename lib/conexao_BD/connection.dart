@@ -15,7 +15,8 @@ class Connection {
               nomeLivro TEXT NOT NULL,
               nomeAutor TEXT NOT NULL,
               preco REAL NOT NULL,
-              image TEXT 
+              image TEXT ,
+              genero Text not null
             )
             ''');
 

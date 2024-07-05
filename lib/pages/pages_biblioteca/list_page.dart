@@ -67,7 +67,7 @@ class _ListPageState extends State<ListPage> {
                     ),
               title: Text(livros[index].nomeLivro),
               subtitle: Text(
-                  'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}'),
+                  'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}\nGênero ${livros[index].genero}'),
             ),
           );
         },

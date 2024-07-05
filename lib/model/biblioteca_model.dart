@@ -4,12 +4,15 @@ class BibliotecaModel {
   final String nomeAutor;
   final double preco;
   final String? image;
+  final String genero;
+
 
   BibliotecaModel({
     required this.id,
     required this.nomeLivro,
     required this.nomeAutor,
     required this.preco,
+    required this.genero,
     this.image
   });
 
@@ -20,6 +23,8 @@ class BibliotecaModel {
       'nomeAutor': nomeAutor,
       'preco': preco,
       'image': image,
+      'genero': genero,
+
     };
   }
 
@@ -30,6 +35,8 @@ class BibliotecaModel {
       nomeAutor: json['nomeAutor'] as String,
       preco: json['preco'] as double,
       image: json['image'] as String,
+      genero: json['genero'] as String,
+
      );
   }
 }

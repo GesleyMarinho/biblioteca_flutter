@@ -110,7 +110,7 @@ class _EditPageState extends State<EditPage> {
               ),
               title: Text(livros[index].nomeLivro),
               subtitle: Text(
-                  'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}'),
+                  'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}\nGênero ${livros[index].genero}'),
               trailing: IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
@@ -131,6 +131,9 @@ class _EditPageState extends State<EditPage> {
     TextEditingController(text: livro.nomeAutor);
     final TextEditingController precoController =
     TextEditingController(text: livro.preco.toString());
+    final TextEditingController generoController = TextEditingController(text: livro.genero);
+
+
 
     _image = livro.image != null ? File(livro.image!) : null;
 
@@ -155,6 +158,11 @@ class _EditPageState extends State<EditPage> {
                   controller: precoController,
                   decoration: const InputDecoration(labelText: 'Preço'),
                   keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: generoController,
+                  decoration: const InputDecoration(labelText: 'Gênero'),
+                  keyboardType: TextInputType.text,
                 ),
                 const SizedBox(height: 16),
                 GestureDetector(
@@ -194,6 +202,7 @@ class _EditPageState extends State<EditPage> {
                 final String nomeLivro = nomeLivroController.text;
                 final String nomeAutor = nomeAutorController.text;
                 final double preco = double.parse(precoController.text);
+                final String genero = generoController.text;
                 String? imagePath = livro.image;
 
                 if (_image != null && _image!.path != livro.image) {
@@ -205,13 +214,14 @@ class _EditPageState extends State<EditPage> {
                   await _image!.copy(imagePath);
                 }
 
-                if (nomeLivro.isNotEmpty && nomeAutor.isNotEmpty && preco > 0) {
+                if (nomeLivro.isNotEmpty && nomeAutor.isNotEmpty && preco > 0 && genero.isEmpty) {
                   final updateLivro = BibliotecaModel(
                     id: livro.id,
                     nomeLivro: nomeLivro,
                     nomeAutor: nomeAutor,
                     preco: preco,
                     image: imagePath,
+                    genero: genero,
                   );
                   await BibliotecaDatabase.instance.updateLivro(updateLivro);
                   _loadLivros();

@@ -18,6 +18,7 @@ class _InsertPageState extends State<InsertPage> {
   final TextEditingController nomeLivroController = TextEditingController();
   final TextEditingController nomeAutorController = TextEditingController();
   final TextEditingController precoController = TextEditingController();
+  final TextEditingController generoController = TextEditingController();
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -159,6 +160,30 @@ class _InsertPageState extends State<InsertPage> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
+                TextField(
+                  controller: generoController,
+                  decoration:  InputDecoration(
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:const  BorderSide(
+                        color: Colors.blue,
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    labelText: 'Gênero',
+                    hintText: 'Ficção ciêntifica...',
+                    labelStyle:const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    icon: const Icon(
+                      Icons.book_sharp,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
                 GestureDetector(
                   onTap: () => _showImageSourceActionSheet(context),
                   child: Container(
@@ -226,8 +251,9 @@ class _InsertPageState extends State<InsertPage> {
     final String nomeLivro = nomeLivroController.text;
     final String nomeAutor = nomeAutorController.text;
     final double preco = double.parse(precoController.text);
+    final String genero = generoController.text;
 
-    if (nomeLivro.isEmpty || nomeAutor.isEmpty || preco <= 0) {
+    if (nomeLivro.isEmpty || nomeAutor.isEmpty || preco <= 0 || genero.isEmpty ) {
       _showDialog(context, 'Erro',
           'Por Favor, preencha todos os campos corretamente.', Colors.red);
     } else {
@@ -249,6 +275,7 @@ class _InsertPageState extends State<InsertPage> {
             'nomeAutor': nomeAutor,
             'preco': preco,
             'image': imagePath,
+            'genero': genero,
           },
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
@@ -276,6 +303,7 @@ class _InsertPageState extends State<InsertPage> {
                 nomeLivroController.clear();
                 nomeAutorController.clear();
                 precoController.clear();
+                generoController.clear();
                 setState(() {
                   _image = null;
                 });

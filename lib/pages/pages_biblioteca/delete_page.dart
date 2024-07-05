@@ -95,7 +95,7 @@ class _DeletePageState extends State<DeletePage> {
                         ),
                   title: Text(livros[index].nomeLivro),
                   subtitle: Text(
-                      'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}'),
+                      'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}\nGênero ${livros[index].genero}'),
                 ),
               ),
             ),

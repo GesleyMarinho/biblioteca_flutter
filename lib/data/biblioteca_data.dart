@@ -55,6 +55,7 @@ class BibliotecaDatabase {
         nomeAutor: maps[i]['nomeAutor'],
         preco: maps[i]['preco'],
         image: maps[i]['image'],
+        genero: maps[i]['genero'],
       );
     });
   }
