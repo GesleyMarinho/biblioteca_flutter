@@ -44,6 +44,28 @@ class BibliotecaDatabase {
     );
   }
 
+  Future<List<BibliotecaModel>> getLivrosByGenero(String genero) async {
+    final db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'livros',
+      where: 'genero = ?',
+      whereArgs: [genero],
+    );
+
+    print('get livros by genero $maps');
+    return List.generate(maps.length, (i) {
+      return BibliotecaModel.fromJson(maps[i]);
+    });
+  }
+
+  Future<List<String>> getBuscarGeneros() async{
+    final db = await instance.database;
+    final result = await db.rawQuery('SELECT distinct genero FROM livros');
+    print('result $result');
+    return result.map((e)=> e['genero'] as String).toList();
+
+  }
+
   Future<List<BibliotecaModel>> getLivros() async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query('livros');

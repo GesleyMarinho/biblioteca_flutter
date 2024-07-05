@@ -12,6 +12,8 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   List<BibliotecaModel> livros = [];
+  List<String> generos = [];
+  String? _generoSelecionado;
 
   Future<void> _loadLivros() async {
     final books = await BibliotecaDatabase.instance.getLivros();
@@ -20,10 +22,29 @@ class _ListPageState extends State<ListPage> {
     });
   }
 
+  Future<void> _buscarGeneros() async {
+    final listGeneros = await BibliotecaDatabase.instance.getBuscarGeneros();
+    setState(() {
+      generos = listGeneros;
+    });
+  }
+
+  Future<void> _filtrarLivrosGenero() async {
+    if (_generoSelecionado == null) {
+      _loadLivros();
+    } else {
+      final books = await BibliotecaDatabase.instance.getLivrosByGenero(_generoSelecionado!);
+      setState(() {
+        livros = books;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _loadLivros();
+    _buscarGeneros();
   }
 
   @override
@@ -39,38 +60,67 @@ class _ListPageState extends State<ListPage> {
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        shrinkWrap: true,
-        itemCount: livros.length,
-        itemBuilder: (context, index) {
-          final livro = livros[index];
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.zero,
-              gradient: LinearGradient(
-                colors: index % 2 == 0
-                    ? [Colors.green.shade200, Colors.grey.shade600]
-                    : [Colors.grey.shade200, Colors.green.shade600],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButtonFormField<String>(
+              value: _generoSelecionado,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _generoSelecionado = newValue;
+                  _filtrarLivrosGenero();
+                });
+              },
+              items: generos.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              decoration: const InputDecoration(
+                labelText: 'Gênero',
+                border: OutlineInputBorder(),
               ),
             ),
-            child: ListTile(
-              leading: livros[index].image != null
-                  ? CircleAvatar(
-                      backgroundImage: FileImage(File(livros[index].image!)),
+          ),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: livros.length,
+              itemBuilder: (context, index) {
+                final livro = livros[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.zero,
+                    gradient: LinearGradient(
+                      colors: index % 2 == 0
+                          ? [Colors.green.shade200, Colors.grey.shade600]
+                          : [Colors.grey.shade200, Colors.green.shade600],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: ListTile(
+                    leading: livro.image != null
+                        ? CircleAvatar(
+                      backgroundImage: FileImage(File(livro.image!)),
                       radius: 30,
                     )
-                  : const CircleAvatar(
+                        : const CircleAvatar(
                       backgroundColor: Colors.grey,
                       child: Icon(Icons.book, color: Colors.white),
                     ),
-              title: Text(livros[index].nomeLivro),
-              subtitle: Text(
-                  'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}\nGênero ${livros[index].genero}'),
+                    title: Text(livro.nomeLivro),
+                    subtitle: Text(
+                      'Autor: ${livro.nomeAutor}\nPreço: R\$${livro.preco}\nGênero: ${livro.genero}',
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
