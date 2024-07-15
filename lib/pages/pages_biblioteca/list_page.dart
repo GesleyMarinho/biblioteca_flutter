@@ -14,13 +14,16 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   List<BibliotecaModel> livros = [];
+  List<int> favoriteIds = [];
   List<String> generos = [];
   String? _generoSelecionado;
 
   Future<void> _loadLivros() async {
-    final books = await BibliotecaDatabase.instance.getLivros();
+    final livro = await BibliotecaDatabase.instance.getLivros();
+    final allFavoritos = await FavoritesData.instance.getFavoriteIds();
     setState(() {
-      livros = books;
+      livros = livro;
+      favoriteIds = allFavoritos;
     });
   }
 
@@ -35,8 +38,7 @@ class _ListPageState extends State<ListPage> {
     if (_generoSelecionado == null || _generoSelecionado == "Todos") {
       _loadLivros();
     } else {
-      final books = await BibliotecaDatabase.instance
-          .getLivrosByGenero(_generoSelecionado!);
+      final books = await BibliotecaDatabase.instance.getLivrosByGenero(_generoSelecionado!);
       setState(() {
         livros = books;
       });
@@ -44,22 +46,8 @@ class _ListPageState extends State<ListPage> {
   }
 
   Future<void> _toggleFavorite(BibliotecaModel livro) async {
-    int newFavoritoValue = livro.favorito == 0 ? 1 : 0;
-
-    if (newFavoritoValue == 1) {
-      await FavoritesData.instance.insertFavorite(livro);
-      print("Favoritou o livro ${livro.nomeLivro}");
-    } else {
-      await FavoritesData.instance.deleteFavorite(livro.id);
-      print("Removeu o livro ${livro.nomeLivro} dos favoritos");
-    }
-
-    setState(() {
-      livro.favorito = newFavoritoValue;
-    });
-
-
-    print("Livros recarregados");
+    await FavoritesData.instance.toggleFavorite(livro);
+    _loadLivros();
   }
 
   @override
@@ -112,6 +100,7 @@ class _ListPageState extends State<ListPage> {
               itemCount: livros.length,
               itemBuilder: (context, index) {
                 final livro = livros[index];
+                final isFavorite = favoriteIds.contains(livro.id);
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.zero,
@@ -139,10 +128,8 @@ class _ListPageState extends State<ListPage> {
                     ),
                     trailing: IconButton(
                       icon: Icon(
-                        livro.favorito == 0
-                            ? Icons.favorite_border
-                            : Icons.favorite,
-                        color: livro.favorito == 0 ? null : Colors.red,
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : null,
                       ),
                       onPressed: () => _toggleFavorite(livro),
                     ),

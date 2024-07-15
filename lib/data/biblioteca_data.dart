@@ -12,7 +12,7 @@ class BibliotecaDatabase {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await Connection.get(); // Use a conexão unificada
+    _database = await Connection.instance.database; // Use a conexão unificada
     return _database!;
   }
 
@@ -58,12 +58,11 @@ class BibliotecaDatabase {
     });
   }
 
-  Future<List<String>> getBuscarGeneros() async{
+  Future<List<String>> getBuscarGeneros() async {
     final db = await instance.database;
     final result = await db.rawQuery('SELECT distinct genero FROM livros');
     print('result $result');
-    return result.map((e)=> e['genero'] as String).toList();
-
+    return result.map((e) => e['genero'] as String).toList();
   }
 
   Future<List<BibliotecaModel>> getLivros() async {

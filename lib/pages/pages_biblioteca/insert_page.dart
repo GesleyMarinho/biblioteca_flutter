@@ -267,8 +267,8 @@ class _InsertPageState extends State<InsertPage> {
           await _image!.copy(imagePath);
         }
 
-        Database db = await Connection.get();
-        await db.insert(
+        Database? db = await Connection.instance.database;
+        await db?.insert(
           'livros',
           {
             'nomeLivro': nomeLivro,

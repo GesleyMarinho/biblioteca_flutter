@@ -5,7 +5,7 @@ class BibliotecaModel {
   final double preco;
   final String? image;
   final String genero;
-   int favorito  ;
+   bool isFavorite  ;
 
   BibliotecaModel({
     required this.id,
@@ -14,20 +14,21 @@ class BibliotecaModel {
     required this.preco,
     this.image,
     required this.genero,
-    this.favorito = 0,
+    this.isFavorite = false ,
   });
 
   factory BibliotecaModel.fromJson(Map<String, dynamic> json) {
     return BibliotecaModel(
-      id: json['id'] as int,
-      nomeLivro: json['nomeLivro'] as String,
-      nomeAutor: json['nomeAutor'] as String,
-      preco: json['preco'] as double,
-      image: json['image'] as String?,
-      genero: json['genero'] as String,
-      favorito: json['favorito'] as int
+      id: json['id'],
+      nomeLivro: json['nomeLivro'],
+      nomeAutor: json['nomeAutor'],
+      preco: json['preco'],
+      genero: json['genero'],
+      image: json['image'],
+      isFavorite: json['isFavorite'] == 1,
     );
   }
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -35,9 +36,9 @@ class BibliotecaModel {
       'nomeLivro': nomeLivro,
       'nomeAutor': nomeAutor,
       'preco': preco,
-      'image': image,
       'genero': genero,
-      'favorito': favorito,
+      'image': image,
+      'isFavorite': isFavorite ? 1 : 0,
     };
   }
 }

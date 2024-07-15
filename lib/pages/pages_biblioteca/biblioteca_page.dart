@@ -1,5 +1,6 @@
 import 'package:biblioteca_flutter/pages/pages_biblioteca/delete_page.dart';
 import 'package:biblioteca_flutter/pages/pages_biblioteca/edit_page.dart';
+import 'package:biblioteca_flutter/pages/pages_biblioteca/favorites_page.dart';
 import 'package:biblioteca_flutter/pages/pages_biblioteca/insert_page.dart';
 import 'package:biblioteca_flutter/pages/pages_biblioteca/list_page.dart';
 import 'package:flutter/material.dart';
@@ -134,6 +135,31 @@ class _BibliotecaPageState extends State<BibliotecaPage> {
                     )),
                 child: const Text(
                   'List',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FavoritesPage()),
+                  );
+                },
+                style: TextButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(48.0),
+                    )),
+                child: const Text(
+                  'Favoritos',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
