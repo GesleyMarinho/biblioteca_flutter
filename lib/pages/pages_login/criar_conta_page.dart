@@ -150,7 +150,6 @@ class _CriarContaPageState extends State<CriarContaPage> {
                 const SizedBox(height: 48.0),
                 ElevatedButton(
                   onPressed: () async {
-
                     // Validando que nenhum campo está vazio
                     if (nomeController.text.isEmpty ||
                         emailController.text.isEmpty ||
@@ -173,7 +172,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                     }
                     // Criando um objeto para receber os dados e inserir na tabela
                     final novoUsuario = LoginModel(
-                      id: 0,
+                      //id: 0,
                       nome: nomeController.text,
                       email: emailController.text,
                       senha: senhaController.text,
@@ -189,14 +188,15 @@ class _CriarContaPageState extends State<CriarContaPage> {
                       });
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const  SnackBar(
-                           content:  Text('Usuário Inserido Com sucesso!'),
-                        ) ,
+                        const SnackBar(
+                          content: Text('Usuário Inserido Com sucesso!'),
+                        ),
                       );
 
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()),
                         (Route<dynamic> route) => false,
                       );
                     } catch (e) {

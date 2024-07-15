@@ -12,7 +12,7 @@ class BibliotecaDatabase {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await Connection.get(); // Use a conexão unificada
+    _database = await Connection.instance.database; // Use a conexão unificada
     return _database!;
   }
 

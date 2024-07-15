@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import '../conexao_BD/connection.dart';
 
 class FavoritesData {
-
   static final FavoritesData instance = FavoritesData._init();
 
   static Database? _database;
@@ -12,33 +11,49 @@ class FavoritesData {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await Connection.get(); // Use a conexão unificada
+    _database = await Connection.instance.database;
     return _database!;
   }
 
-  Future<void> insertFavorite(BibliotecaModel livro ) async{
+  Future<void> toggleFavorite(BibliotecaModel livro) async {
     final db = await instance.database;
-    await db.insert (
-      'favorites',
-      livro.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    final favorites = await db.query('favorites', where: 'livroId = ?', whereArgs: [livro.id]);
 
+    if (favorites.isEmpty) {
+      await db.insert(
+        'favorites',
+        {'livroId': livro.id},
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } else {
+      await db.delete('favorites', where: 'livroId = ?', whereArgs: [livro.id]);
+    }
   }
 
-  Future<void> deleteFavorite(int id) async{
+  Future<List<int>> getFavoriteIds() async {
     final db = await instance.database;
-    await db.delete('favorites',where: 'id = ?',whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await db.query('favorites');
+
+    return List.generate(maps.length, (i) {
+      return maps[i]['livroId'];
+    });
   }
 
   Future<List<BibliotecaModel>> getFavorites() async {
     final db = await instance.database;
-    final List<Map<String,dynamic>> maps = await db.query('favorites');
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT *
+      FROM livros 
+      INNER JOIN favorites ON livros.id = favorites.livroId
+    ''');
 
-    return List.generate(maps.length, (i){
+    return List.generate(maps.length, (i) {
       return BibliotecaModel.fromJson(maps[i]);
     });
   }
 
-
+  Future close() async {
+    final db = await instance.database;
+    db.close();
+  }
 }

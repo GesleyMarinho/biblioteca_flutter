@@ -11,7 +11,7 @@ class LoginData {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await Connection.get();
+    _database = await Connection.instance.database;
     return _database!;
   }
 
