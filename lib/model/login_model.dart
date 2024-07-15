@@ -6,15 +6,12 @@ class LoginModel {
   final String? confirmaSenha;
 
   LoginModel({
-     this.id,
-     this.nome,
+    this.id,
+    this.nome,
     required this.email,
     required this.senha,
-     this.confirmaSenha,
+    this.confirmaSenha,
   });
-
-
-
 
   Map<String, dynamic> toMap() {
     return {

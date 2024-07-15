@@ -5,6 +5,7 @@ class BibliotecaModel {
   final double preco;
   final String? image;
   final String genero;
+   int favorito  ;
 
   BibliotecaModel({
     required this.id,
@@ -13,6 +14,7 @@ class BibliotecaModel {
     required this.preco,
     this.image,
     required this.genero,
+    this.favorito = 0,
   });
 
   factory BibliotecaModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class BibliotecaModel {
       preco: json['preco'] as double,
       image: json['image'] as String?,
       genero: json['genero'] as String,
+      favorito: json['favorito'] as int
     );
   }
 
@@ -34,6 +37,7 @@ class BibliotecaModel {
       'preco': preco,
       'image': image,
       'genero': genero,
+      'favorito': favorito,
     };
   }
 }

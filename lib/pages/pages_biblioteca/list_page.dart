@@ -3,6 +3,8 @@ import 'package:biblioteca_flutter/model/biblioteca_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
+import '../../data/favorites_data.dart';
+
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
 
@@ -33,11 +35,31 @@ class _ListPageState extends State<ListPage> {
     if (_generoSelecionado == null || _generoSelecionado == "Todos") {
       _loadLivros();
     } else {
-      final books = await BibliotecaDatabase.instance.getLivrosByGenero(_generoSelecionado!);
+      final books = await BibliotecaDatabase.instance
+          .getLivrosByGenero(_generoSelecionado!);
       setState(() {
         livros = books;
       });
     }
+  }
+
+  Future<void> _toggleFavorite(BibliotecaModel livro) async {
+    int newFavoritoValue = livro.favorito == 0 ? 1 : 0;
+
+    if (newFavoritoValue == 1) {
+      await FavoritesData.instance.insertFavorite(livro);
+      print("Favoritou o livro ${livro.nomeLivro}");
+    } else {
+      await FavoritesData.instance.deleteFavorite(livro.id);
+      print("Removeu o livro ${livro.nomeLivro} dos favoritos");
+    }
+
+    setState(() {
+      livro.favorito = newFavoritoValue;
+    });
+
+
+    print("Livros recarregados");
   }
 
   @override
@@ -114,6 +136,15 @@ class _ListPageState extends State<ListPage> {
                     title: Text(livro.nomeLivro),
                     subtitle: Text(
                       'Autor: ${livro.nomeAutor}\nPreço: R\$${livro.preco}\nGênero: ${livro.genero}',
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(
+                        livro.favorito == 0
+                            ? Icons.favorite_border
+                            : Icons.favorite,
+                        color: livro.favorito == 0 ? null : Colors.red,
+                      ),
+                      onPressed: () => _toggleFavorite(livro),
                     ),
                   ),
                 );
