@@ -18,9 +18,6 @@ class Connection {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    // Deletar o banco de dados existente antes de criar um novo
-   // await deleteDatabase(path);
-
     return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
