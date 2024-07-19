@@ -20,6 +20,7 @@ class LivroData {
     final db = await instance.database;
     final result = await db.query('historico_leitura');
     return result.map((e) => e['bookId'] as int).toList();
+
   }
 
   Future<void> toggleLivroEmLeitura(BibliotecaModel livro) async {
@@ -33,12 +34,14 @@ class LivroData {
         {'bookId': livro.id},
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
+      print('Livro adicionado ao histórico de leitura: ${livro.nomeLivro}');
     } else {
       await db.delete(
         'historico_leitura',
         where: 'bookId = ?',
         whereArgs: [livro.id],
       );
+      print('Livro removido do histórico de leitura: ${livro.nomeLivro}');
     }
   }
 }
