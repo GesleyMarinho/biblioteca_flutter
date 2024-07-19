@@ -50,6 +50,21 @@ class Connection {
       FOREIGN KEY (livroId) REFERENCES biblioteca(id)
     )
     ''');
+
+    await db.execute('''
+   
+    CREATE TABLE historico_leitura (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      bookId INTEGER,
+      userId INTEGER,
+      dateRead TEXT,
+      rating INTEGER,
+      review TEXT,
+      status TEXT,
+      FOREIGN KEY (bookId) REFERENCES livros(id),
+      FOREIGN KEY (userId) REFERENCES usuario(id)
+  )
+   ''');
   }
 
   Future close() async {

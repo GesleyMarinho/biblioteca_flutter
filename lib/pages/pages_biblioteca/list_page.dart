@@ -1,4 +1,5 @@
 import 'package:biblioteca_flutter/data/biblioteca_data.dart';
+import 'package:biblioteca_flutter/data/livro_data.dart';
 import 'package:biblioteca_flutter/model/biblioteca_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -16,15 +17,23 @@ class _ListPageState extends State<ListPage> {
   List<BibliotecaModel> livros = [];
   List<int> favoriteIds = [];
   List<String> generos = [];
+  List<int> leituraIds = [];
   String? _generoSelecionado;
 
   Future<void> _loadLivros() async {
     final livro = await BibliotecaDatabase.instance.getLivros();
     final allFavoritos = await FavoritesData.instance.getFavoriteIds();
+    final allLeitura = await LivroData.instance.getLivroEmLeitura();
     setState(() {
       livros = livro;
       favoriteIds = allFavoritos;
+      leituraIds = allLeitura;
     });
+  }
+
+  Future<void> _toggleLivroEmLeitura(BibliotecaModel livro) async {
+    await LivroData.instance.toggleLivroEmLeitura(livro);
+    _loadLivros();
   }
 
   Future<void> _buscarGeneros() async {
@@ -38,7 +47,8 @@ class _ListPageState extends State<ListPage> {
     if (_generoSelecionado == null || _generoSelecionado == "Todos") {
       _loadLivros();
     } else {
-      final books = await BibliotecaDatabase.instance.getLivrosByGenero(_generoSelecionado!);
+      final books = await BibliotecaDatabase.instance
+          .getLivrosByGenero(_generoSelecionado!);
       setState(() {
         livros = books;
       });
@@ -101,6 +111,7 @@ class _ListPageState extends State<ListPage> {
               itemBuilder: (context, index) {
                 final livro = livros[index];
                 final isFavorite = favoriteIds.contains(livro.id);
+                final isLendo = leituraIds.contains(livro.id);
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.zero,
@@ -115,23 +126,37 @@ class _ListPageState extends State<ListPage> {
                   child: ListTile(
                     leading: livro.image != null
                         ? CircleAvatar(
-                      backgroundImage: FileImage(File(livro.image!)),
-                      radius: 30,
-                    )
+                            backgroundImage: FileImage(File(livro.image!)),
+                            radius: 30,
+                          )
                         : const CircleAvatar(
-                      backgroundColor: Colors.grey,
-                      child: Icon(Icons.book, color: Colors.white),
-                    ),
+                            backgroundColor: Colors.grey,
+                            child: Icon(Icons.book, color: Colors.white),
+                          ),
                     title: Text(livro.nomeLivro),
                     subtitle: Text(
                       'Autor: ${livro.nomeAutor}\nPreço: R\$${livro.preco}\nGênero: ${livro.genero}',
                     ),
-                    trailing: IconButton(
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : null,
-                      ),
-                      onPressed: () => _toggleFavorite(livro),
+                    trailing: Wrap(
+                      spacing: 12,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : null,
+                          ),
+                          onPressed: () => _toggleFavorite(livro),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            isLendo
+                                ? Icons.menu_book_outlined
+                                : Icons.menu_book,
+                            color: isLendo ? Colors.white : null,
+                          ),
+                          onPressed: () => _toggleLivroEmLeitura(livro),
+                        ),
+                      ],
                     ),
                   ),
                 );
