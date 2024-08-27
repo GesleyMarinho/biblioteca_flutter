@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Digite os dados de acesso abaixo !!!',
+                  'Digite os dados de acesso abaixo',
                   style: TextStyle(
                     color: Colors.white,
                   ),

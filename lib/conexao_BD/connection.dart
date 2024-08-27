@@ -58,7 +58,7 @@ class Connection {
       bookId INTEGER,
       userId INTEGER,
       dateRead TEXT,
-      rating INTEGER,
+      rating DOUBLE,
       review TEXT,
       status TEXT,
       FOREIGN KEY (bookId) REFERENCES livros(id),

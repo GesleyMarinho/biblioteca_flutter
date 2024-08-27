@@ -31,10 +31,27 @@ class _ListPageState extends State<ListPage> {
     });
   }
 
-  Future<void> _toggleLivroEmLeitura(BibliotecaModel livro) async {
-    await LivroData.instance.toggleLivroEmLeitura(livro);
+  Future<void> _dataInicioLeitura(int bookId, DateTime data) async {
+    await FavoritesData.instance.dataInicioLeitura(bookId, data);
     _loadLivros();
   }
+
+  Future<void> _toggleLivroEmLeitura(BibliotecaModel livro) async {
+    final wasInReadingList = leituraIds.contains(livro.id);
+
+    await LivroData.instance.toggleLivroEmLeitura(livro);
+
+    if (!wasInReadingList && leituraIds.contains(livro.id)) {
+      // Livro foi marcado como em leitura, atualiza a data
+      await _dataInicioLeitura(livro.id, DateTime.now());
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Data de início de leitura atualizada com sucesso')),
+      );
+    }
+
+    _loadLivros();
+  }
+
 
   Future<void> _buscarGeneros() async {
     final listGeneros = await BibliotecaDatabase.instance.getBuscarGeneros();

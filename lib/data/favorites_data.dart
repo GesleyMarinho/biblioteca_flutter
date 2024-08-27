@@ -17,7 +17,8 @@ class FavoritesData {
 
   Future<void> toggleFavorite(BibliotecaModel livro) async {
     final db = await instance.database;
-    final favorites = await db.query('favorites', where: 'livroId = ?', whereArgs: [livro.id]);
+    final favorites = await db
+        .query('favorites', where: 'livroId = ?', whereArgs: [livro.id]);
 
     if (favorites.isEmpty) {
       await db.insert(
@@ -52,8 +53,13 @@ class FavoritesData {
     });
   }
 
-  Future close() async {
+  Future<void> dataInicioLeitura(int bookId, DateTime data) async {
     final db = await instance.database;
-    db.close();
+
+    await db.rawInsert(
+      '''INSERT INTO historico_leitura (bookId, dataRead) VALUES (?, ?)
+         ON CONFLICT(bookId) DO UPDATE SET dataRead = excluded.dataRead''',
+      [bookId, data.toIso8601String()],
+    );
   }
 }
