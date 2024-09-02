@@ -1,6 +1,7 @@
 import 'package:biblioteca_flutter/data/biblioteca_data.dart';
 import 'package:biblioteca_flutter/data/livro_data.dart';
 import 'package:biblioteca_flutter/model/biblioteca_model.dart';
+import 'package:biblioteca_flutter/pages/pages_biblioteca/detalhe_livros_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -20,15 +21,44 @@ class _ListPageState extends State<ListPage> {
   List<int> leituraIds = [];
   String? _generoSelecionado;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadLivros();
+    _buscarGeneros();
+  }
+
   Future<void> _loadLivros() async {
     final livro = await BibliotecaDatabase.instance.getLivros();
     final allFavoritos = await FavoritesData.instance.getFavoriteIds();
     final allLeitura = await LivroData.instance.getLivroEmLeitura();
+
     setState(() {
       livros = livro;
       favoriteIds = allFavoritos;
       leituraIds = allLeitura;
     });
+  }
+
+  Future<void> _buscarGeneros() async {
+    final listGeneros = await BibliotecaDatabase.instance.getBuscarGeneros();
+
+    setState(() {
+      generos = ["Todos", ...listGeneros];
+    });
+  }
+
+  Future<void> _filtrarLivrosGenero() async {
+    if (_generoSelecionado == null || _generoSelecionado == "Todos") {
+      _loadLivros();
+    } else {
+      final books =
+      await BibliotecaDatabase.instance.getLivrosByGenero(_generoSelecionado!);
+
+      setState(() {
+        livros = books;
+      });
+    }
   }
 
   Future<void> _dataInicioLeitura(int bookId, DateTime data) async {
@@ -42,46 +72,21 @@ class _ListPageState extends State<ListPage> {
     await LivroData.instance.toggleLivroEmLeitura(livro);
 
     if (!wasInReadingList && leituraIds.contains(livro.id)) {
-      // Livro foi marcado como em leitura, atualiza a data
       await _dataInicioLeitura(livro.id, DateTime.now());
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data de início de leitura atualizada com sucesso')),
+        const SnackBar(
+          content: Text('Data de início de leitura atualizada com sucesso'),
+        ),
       );
     }
 
     _loadLivros();
   }
 
-
-  Future<void> _buscarGeneros() async {
-    final listGeneros = await BibliotecaDatabase.instance.getBuscarGeneros();
-    setState(() {
-      generos = ["Todos", ...listGeneros];
-    });
-  }
-
-  Future<void> _filtrarLivrosGenero() async {
-    if (_generoSelecionado == null || _generoSelecionado == "Todos") {
-      _loadLivros();
-    } else {
-      final books = await BibliotecaDatabase.instance
-          .getLivrosByGenero(_generoSelecionado!);
-      setState(() {
-        livros = books;
-      });
-    }
-  }
-
   Future<void> _toggleFavorite(BibliotecaModel livro) async {
     await FavoritesData.instance.toggleFavorite(livro);
     _loadLivros();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadLivros();
-    _buscarGeneros();
   }
 
   @override
@@ -91,9 +96,7 @@ class _ListPageState extends State<ListPage> {
         backgroundColor: Colors.green,
         title: const Text(
           'List Book',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -129,6 +132,7 @@ class _ListPageState extends State<ListPage> {
                 final livro = livros[index];
                 final isFavorite = favoriteIds.contains(livro.id);
                 final isLendo = leituraIds.contains(livro.id);
+
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.zero,
@@ -143,13 +147,13 @@ class _ListPageState extends State<ListPage> {
                   child: ListTile(
                     leading: livro.image != null
                         ? CircleAvatar(
-                            backgroundImage: FileImage(File(livro.image!)),
-                            radius: 30,
-                          )
+                      backgroundImage: FileImage(File(livro.image!)),
+                      radius: 30,
+                    )
                         : const CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            child: Icon(Icons.book, color: Colors.white),
-                          ),
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.book, color: Colors.white),
+                    ),
                     title: Text(livro.nomeLivro),
                     subtitle: Text(
                       'Autor: ${livro.nomeAutor}\nPreço: R\$${livro.preco}\nGênero: ${livro.genero}',
@@ -166,12 +170,34 @@ class _ListPageState extends State<ListPage> {
                         ),
                         IconButton(
                           icon: Icon(
-                            isLendo
-                                ? Icons.menu_book_outlined
-                                : Icons.menu_book,
+                            isLendo ? Icons.menu_book_outlined : Icons.menu_book,
                             color: isLendo ? Colors.white : null,
                           ),
                           onPressed: () => _toggleLivroEmLeitura(livro),
+                        ),
+                        PopupMenuButton<String>(
+                          onSelected: (String result) {
+                            if (result == 'detalhes') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const DetalheLivrosPage(),
+                                ),
+                              );
+                            }
+                          },
+                          itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                            const PopupMenuItem<String>(
+                              value: 'detalhes',
+                              child: Text('Ver detalhes'),
+                            ),
+                            const PopupMenuItem<String>(
+                              value: 'opcao2',
+                              child: Text('Outra opção'),
+                            ),
+                          ],
+                          icon: const Icon(Icons.more_vert),
                         ),
                       ],
                     ),
