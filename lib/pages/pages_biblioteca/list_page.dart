@@ -181,7 +181,7 @@ class _ListPageState extends State<ListPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const DetalheLivrosPage(),
+                                  builder: (context) => DetalheLivrosPage(livro: livro),
                                 ),
                               );
                             }

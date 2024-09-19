@@ -1,5 +1,5 @@
 import 'package:biblioteca_flutter/pages/pages_biblioteca/delete_page.dart';
-import 'package:biblioteca_flutter/pages/pages_biblioteca/detalhe_livros_page.dart';
+
 import 'package:biblioteca_flutter/pages/pages_biblioteca/edit_page.dart';
 import 'package:biblioteca_flutter/pages/pages_biblioteca/favorites_page.dart';
 import 'package:biblioteca_flutter/pages/pages_biblioteca/insert_page.dart';
@@ -167,28 +167,6 @@ class _BibliotecaPageState extends State<BibliotecaPage> {
             ],
           ),
           const SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const DetalheLivrosPage()),
-                  );
-                },
-                style: TextButton.styleFrom(
-                    backgroundColor: Colors.blueGrey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(48.0),
-                    )),
-                child: const Text(
-                  'Detalhamento de Livros',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          )
 
         ],
       ),
