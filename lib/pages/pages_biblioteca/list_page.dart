@@ -31,12 +31,10 @@ class _ListPageState extends State<ListPage> {
   Future<void> _loadLivros() async {
     final livro = await BibliotecaDatabase.instance.getLivros();
     final allFavoritos = await FavoritesData.instance.getFavoriteIds();
-    final allLeitura = await LivroData.instance.getLivroEmLeitura();
 
     setState(() {
       livros = livro;
       favoriteIds = allFavoritos;
-      leituraIds = allLeitura;
     });
   }
 
@@ -52,36 +50,13 @@ class _ListPageState extends State<ListPage> {
     if (_generoSelecionado == null || _generoSelecionado == "Todos") {
       _loadLivros();
     } else {
-      final books =
-      await BibliotecaDatabase.instance.getLivrosByGenero(_generoSelecionado!);
+      final books = await BibliotecaDatabase.instance
+          .getLivrosByGenero(_generoSelecionado!);
 
       setState(() {
         livros = books;
       });
     }
-  }
-
-  Future<void> _dataInicioLeitura(int bookId, DateTime data) async {
-    await FavoritesData.instance.dataInicioLeitura(bookId, data);
-    _loadLivros();
-  }
-
-  Future<void> _toggleLivroEmLeitura(BibliotecaModel livro) async {
-    final wasInReadingList = leituraIds.contains(livro.id);
-
-    await LivroData.instance.toggleLivroEmLeitura(livro);
-
-    if (!wasInReadingList && leituraIds.contains(livro.id)) {
-      await _dataInicioLeitura(livro.id, DateTime.now());
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Data de início de leitura atualizada com sucesso'),
-        ),
-      );
-    }
-
-    _loadLivros();
   }
 
   Future<void> _toggleFavorite(BibliotecaModel livro) async {
@@ -147,13 +122,13 @@ class _ListPageState extends State<ListPage> {
                   child: ListTile(
                     leading: livro.image != null
                         ? CircleAvatar(
-                      backgroundImage: FileImage(File(livro.image!)),
-                      radius: 30,
-                    )
+                            backgroundImage: FileImage(File(livro.image!)),
+                            radius: 30,
+                          )
                         : const CircleAvatar(
-                      backgroundColor: Colors.grey,
-                      child: Icon(Icons.book, color: Colors.white),
-                    ),
+                            backgroundColor: Colors.grey,
+                            child: Icon(Icons.book, color: Colors.white),
+                          ),
                     title: Text(livro.nomeLivro),
                     subtitle: Text(
                       'Autor: ${livro.nomeAutor}\nGênero: ${livro.genero}',
@@ -168,26 +143,20 @@ class _ListPageState extends State<ListPage> {
                           ),
                           onPressed: () => _toggleFavorite(livro),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            isLendo ? Icons.menu_book_outlined : Icons.menu_book,
-                            color: isLendo ? Colors.white : null,
-                          ),
-                          onPressed: () => _toggleLivroEmLeitura(livro),
-                        ),
                         PopupMenuButton<String>(
                           onSelected: (String result) {
                             if (result == 'detalhes') {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DetalheLivrosPage(livro: livro),
+                                  builder: (context) =>
+                                      DetalheLivrosPage(livro: livro),
                                 ),
                               );
                             }
                           },
                           itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<String>>[
+                              <PopupMenuEntry<String>>[
                             const PopupMenuItem<String>(
                               value: 'detalhes',
                               child: Text('Ver detalhes'),

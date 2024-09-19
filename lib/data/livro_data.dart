@@ -16,12 +16,7 @@ class LivroData {
     return _database!;
   }
 
-  Future<List<int>> getLivroEmLeitura() async {
-    final db = await instance.database;
-    final result = await db.query('historico_leitura');
-    return result.map((e) => e['bookId'] as int).toList();
 
-  }
 
   Future<void> toggleLivroEmLeitura(BibliotecaModel livro) async {
     final db = await instance.database;

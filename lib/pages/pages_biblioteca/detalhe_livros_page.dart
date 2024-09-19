@@ -74,11 +74,11 @@ class _DetalheLivrosPageState extends State<DetalheLivrosPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Autor: ${livro.nomeAutor}\nPreço: R\$${livro.preco}\nGênero: ${livro.genero}',
+                        'Autor: ${livro.nomeAutor}\nPreço: R\$${livro.preco}\nGênero: ${livro.genero}\nComentârio: ${livro.comentario}',
                       ),
                       const SizedBox(height: 8.0),
                       RatingBar.builder(
-                        initialRating: livro.rating ?? 0.0,
+                        //initialRating: livro.rating ?? 0.0,
                         minRating: 1,
                         itemSize: 30,
                         direction: Axis.horizontal,

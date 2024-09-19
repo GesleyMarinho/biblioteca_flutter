@@ -27,6 +27,7 @@ class BibliotecaDatabase {
 
   Future<void> updateLivro(BibliotecaModel livro) async {
     final db = await instance.database;
+
     await db.update(
       'livros',
       livro.toMap(),
@@ -75,8 +76,9 @@ class BibliotecaDatabase {
         nomeLivro: maps[i]['nomeLivro'],
         nomeAutor: maps[i]['nomeAutor'],
         preco: maps[i]['preco'],
-        image: maps[i]['image'],
         genero: maps[i]['genero'],
+        image: maps[i]['image'],
+        comentario: maps[i]['comentario'],
       );
     });
   }

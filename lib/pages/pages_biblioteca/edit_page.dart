@@ -23,7 +23,6 @@ class _EditPageState extends State<EditPage> {
     setState(() {
       livros = books;
     });
-    print(livros);
   }
 
   @override
@@ -77,7 +76,7 @@ class _EditPageState extends State<EditPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Edição dos Livros ',
+          'Edição de Livros ',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.orange,
@@ -101,16 +100,16 @@ class _EditPageState extends State<EditPage> {
             child: ListTile(
               leading: livros[index].image != null
                   ? CircleAvatar(
-                backgroundImage: FileImage(File(livros[index].image!)),
-                radius: 30,
-              )
+                      backgroundImage: FileImage(File(livros[index].image!)),
+                      radius: 30,
+                    )
                   : const CircleAvatar(
-                backgroundColor: Colors.grey,
-                child: Icon(Icons.book, color: Colors.white),
-              ),
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.book, color: Colors.white),
+                    ),
               title: Text(livros[index].nomeLivro),
               subtitle: Text(
-                  'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}\nGênero ${livros[index].genero}'),
+                  'Autor: ${livros[index].nomeAutor}\nPreço: R\$${livros[index].preco}\nGênero ${livros[index].genero}\nComentârio:${livros[index].comentario}'),
               trailing: IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
@@ -126,14 +125,15 @@ class _EditPageState extends State<EditPage> {
 
   void _editLivro(BibliotecaModel livro) {
     final TextEditingController nomeLivroController =
-    TextEditingController(text: livro.nomeLivro);
+        TextEditingController(text: livro.nomeLivro);
     final TextEditingController nomeAutorController =
-    TextEditingController(text: livro.nomeAutor);
+        TextEditingController(text: livro.nomeAutor);
     final TextEditingController precoController =
-    TextEditingController(text: livro.preco.toString());
-    final TextEditingController generoController = TextEditingController(text: livro.genero);
-
-
+        TextEditingController(text: livro.preco.toString());
+    final TextEditingController generoController =
+        TextEditingController(text: livro.genero);
+    final TextEditingController comentarioController =
+        TextEditingController(text: livro.comentario);
 
     _image = livro.image != null ? File(livro.image!) : null;
 
@@ -153,6 +153,7 @@ class _EditPageState extends State<EditPage> {
                 TextField(
                   controller: nomeAutorController,
                   decoration: const InputDecoration(labelText: 'Autor'),
+                  keyboardType: TextInputType.text,
                 ),
                 TextField(
                   controller: precoController,
@@ -162,6 +163,11 @@ class _EditPageState extends State<EditPage> {
                 TextField(
                   controller: generoController,
                   decoration: const InputDecoration(labelText: 'Gênero'),
+                  keyboardType: TextInputType.text,
+                ),
+                TextField(
+                  controller: comentarioController,
+                  decoration: const InputDecoration(labelText: 'Comentário'),
                   keyboardType: TextInputType.text,
                 ),
                 const SizedBox(height: 16),
@@ -177,14 +183,14 @@ class _EditPageState extends State<EditPage> {
                     ),
                     child: _image == null
                         ? const Icon(
-                      Icons.add_a_photo,
-                      color: Colors.blue,
-                      size: 50,
-                    )
+                            Icons.add_a_photo,
+                            color: Colors.blue,
+                            size: 50,
+                          )
                         : Image.file(
-                      _image!,
-                      fit: BoxFit.cover,
-                    ),
+                            _image!,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               ],
@@ -204,17 +210,23 @@ class _EditPageState extends State<EditPage> {
                 final double preco = double.parse(precoController.text);
                 final String genero = generoController.text;
                 String? imagePath = livro.image;
+                final String comentario = comentarioController.text;
 
                 if (_image != null && _image!.path != livro.image) {
                   final Directory appDir =
-                  await getApplicationDocumentsDirectory();
+                      await getApplicationDocumentsDirectory();
                   imagePath = path.join(
                       appDir.path, 'images', path.basename(_image!.path));
-                  await Directory(path.dirname(imagePath!)).create(recursive: true);
+                  await Directory(path.dirname(imagePath!))
+                      .create(recursive: true);
                   await _image!.copy(imagePath);
                 }
 
-                if (nomeLivro.isNotEmpty && nomeAutor.isNotEmpty && preco > 0 && genero.isEmpty) {
+                if (nomeLivro.isNotEmpty ||
+                    nomeAutor.isNotEmpty ||
+                    preco > 0 ||
+                    genero.isNotEmpty ||
+                    comentario.isNotEmpty) {
                   final updateLivro = BibliotecaModel(
                     id: livro.id,
                     nomeLivro: nomeLivro,
@@ -222,6 +234,7 @@ class _EditPageState extends State<EditPage> {
                     preco: preco,
                     image: imagePath,
                     genero: genero,
+                    comentario: comentario,
                   );
                   await BibliotecaDatabase.instance.updateLivro(updateLivro);
                   _loadLivros();

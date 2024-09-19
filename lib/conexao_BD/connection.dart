@@ -30,7 +30,10 @@ class Connection {
       preco REAL NOT NULL,
       genero TEXT NOT NULL,
       image TEXT,
-      isFavorite INTEGER 
+      isFavorite INTEGER ,
+      rating DOUBLE,
+      data TEXT,
+      comentario TEXT
     )
     ''');
     await db.execute('''
@@ -51,20 +54,6 @@ class Connection {
     )
     ''');
 
-    await db.execute('''
-   
-    CREATE TABLE historico_leitura (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      bookId INTEGER,
-      userId INTEGER,
-      dateRead TEXT,
-      rating DOUBLE,
-      review TEXT,
-      status TEXT,
-      FOREIGN KEY (bookId) REFERENCES livros(id),
-      FOREIGN KEY (userId) REFERENCES usuario(id)
-  )
-   ''');
   }
 
   Future close() async {

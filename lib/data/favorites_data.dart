@@ -53,13 +53,13 @@ class FavoritesData {
     });
   }
 
-  Future<void> dataInicioLeitura(int bookId, DateTime data) async {
+  Future<void> dataInicioLeitura(int id, DateTime data) async {
     final db = await instance.database;
 
     await db.rawInsert(
-      '''INSERT INTO historico_leitura (bookId, dataRead) VALUES (?, ?)
+      '''INSERT INTO livros (bookId, dataRead) VALUES (?, ?)
          ON CONFLICT(bookId) DO UPDATE SET dataRead = excluded.dataRead''',
-      [bookId, data.toIso8601String()],
+      [id, data.toIso8601String()],
     );
   }
 }
