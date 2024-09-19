@@ -156,7 +156,7 @@ class _ListPageState extends State<ListPage> {
                     ),
                     title: Text(livro.nomeLivro),
                     subtitle: Text(
-                      'Autor: ${livro.nomeAutor}\nPreço: R\$${livro.preco}\nGênero: ${livro.genero}',
+                      'Autor: ${livro.nomeAutor}\nGênero: ${livro.genero}',
                     ),
                     trailing: Wrap(
                       spacing: 12,
