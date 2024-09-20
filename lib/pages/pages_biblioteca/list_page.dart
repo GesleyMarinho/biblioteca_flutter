@@ -1,5 +1,4 @@
 import 'package:biblioteca_flutter/data/biblioteca_data.dart';
-import 'package:biblioteca_flutter/data/livro_data.dart';
 import 'package:biblioteca_flutter/model/biblioteca_model.dart';
 import 'package:biblioteca_flutter/pages/pages_biblioteca/detalhe_livros_page.dart';
 import 'package:flutter/material.dart';
